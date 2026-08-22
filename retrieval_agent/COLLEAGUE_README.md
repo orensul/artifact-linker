@@ -28,6 +28,11 @@ parameters that appear in the ArtifactBench graph:
   removed from the candidate list entirely after going dead on HuggingFace
   since it was built - not counted in the 94.) See the candidate file's
   header for the full detail.
+- **Model recommendations for all 4 conditions (A/B/C/D) on the 90 datasets**:
+  **`data/advisor_runs_initial_run_max14b/evaluation_conditions_intersection90.csv`**
+  - the merged (A), method1-only (B), method2-only (C), and no-evidence
+  Claude-baseline (D) recommendations, side by side, for every dataset that
+  succeeded in all four.
 - **What you need to fill in**:
   `data/advisor_runs_initial_run_max14b/evaluation_results_template.csv` -
   450 rows (90 datasets x top-5 models), `dataset` and `model_name`
@@ -176,7 +181,7 @@ committed to git). Ask for these if you don't have them.
 |---|---|
 | Candidate dataset list | `retrieval_agent/candidate_datasets_100.txt` / `.csv` |
 | Round-1 (initial_run) results | `data/advisor_runs_initial_run_max14b/` |
-| Master results file (A/B/C/D, 90-dataset intersection) | `data/advisor_runs_initial_run_max14b/evaluation_conditions_intersection90.csv` |
+| Master results file (A/B/C/D, 90-dataset intersection) | **`data/advisor_runs_initial_run_max14b/evaluation_conditions_intersection90.csv`** |
 | Template for you to fill in | `data/advisor_runs_initial_run_max14b/evaluation_results_template.csv` |
 | Library API (`recommend`/`revise`) | `retrieval_agent/api.py` |
 | Full technical docs (Method 1/2 internals, batch CLI details) | `retrieval_agent/README.md` |
