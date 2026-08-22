@@ -93,3 +93,62 @@ python retrieval_agent/build_eval_template.py \
     --eval-results data/advisor_runs_initial_run_max14b/evaluation_results.csv \
     --out-root data/advisor_runs_revision_run_max14b
 ```
+
+## Library usage
+
+For a colleague implementing the *actual* model-evaluation loop (running the
+recommended models on a dataset, measuring performance) and driving their
+own control flow - as opposed to running the batch CLI scripts above -
+`retrieval_agent` is importable as a plain Python package. Its `api.py`
+wraps the same pipeline as `run_initial_run.py`/`run_revision.py` behind
+three functions, so recommendations can be requested for any dataset (not
+just `candidate_datasets_100.txt`) at any point, including well after the
+initial run:
+
+```python
+import sys
+sys.path.insert(0, "/path/to/artifact-linker")   # repo root on sys.path
+
+from retrieval_agent import recommend, recommend_batch, revise
+
+# 1. Get round-1 recommendations for a dataset (runs Method1+Method2+merge+LLM;
+#    cached on disk, so re-calling this is instant/free once it has succeeded).
+recs = recommend("your-org/your-dataset", max_params_b=14,
+                  out_root="data/advisor_runs_initial_run_max14b")
+for r in recs:
+    print(r.rank, r.model_name, r.recommendation_score, r.source_method)
+
+# 2. Run/evaluate each r.model_name on the dataset yourself, however you like.
+eval_results = [
+    {"model_name": recs[0].model_name, "metric_name": "accuracy",
+     "metric_value": 0.81, "error_notes": "hallucinates on long contexts"},
+    {"model_name": recs[1].model_name, "metric_name": "accuracy",
+     "metric_value": 0.55, "error_notes": "over-triggers safety refusals"},
+    # ... one dict per (model, metric) observation - metric_value/error_notes
+    # may be omitted if not available for a given model.
+]
+
+# 3. Feed the results back in for a revised recommendation.
+revised = revise("your-org/your-dataset", eval_results,
+                  initial_run_root="data/advisor_runs_initial_run_max14b")
+for r in revised:
+    print(r.rank, r.model_name, r.change_from_initial, r.reasoning)
+
+# For many datasets at once, recommend_batch() paces calls to avoid Voyage's
+# free-tier rate limit and skips (rather than aborting on) permanent failures:
+all_recs = recommend_batch(["dataset/one", "dataset/two", "dataset/three"])
+```
+
+`recommend()`/`recommend_batch()` retry transient failures (e.g. Voyage
+`RateLimitError`) automatically; a dataset that's dead on HuggingFace or hits
+the graph resolver's ambiguity check (see the caveats noted in
+`candidate_datasets_100.txt`'s header) raises `RecommendationError` after
+retries are exhausted. `revise()` requires that dataset to already have
+round-1 output under `initial_run_root` (i.e. a prior `recommend()` call
+succeeded there) - it does not require a CSV file on disk for
+`eval_results`, unlike the `run_revision.py` CLI.
+
+Same environment requirements as the CLI scripts apply: `OPENAI_API_KEY` +
+`VOYAGE_API_KEY`, `AGENTS_PROJECT_ROOT` for Method 2, and running under
+`.venv-m2` (or an equivalent env with torch + torch_geometric + openai +
+voyageai installed).
