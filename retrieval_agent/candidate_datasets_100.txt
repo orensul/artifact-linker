@@ -1,0 +1,150 @@
+# Candidate pool of 100 text-only, cold-start-safe datasets for AutoModelAdvisor evaluation.
+#
+# Rationale: diverse text-only datasets spanning domains/knowledge types (medicine, science,
+# law, finance, literature, general knowledge, etc.) on which small (~3B param) models can still
+# perform competitively. Diversity comes from domain, not modality. Each entry was (1) verified to
+# exist on HuggingFace via web search, and (2) checked against the 1,207 dataset nodes in
+# artifact_bench/artifact_bench_data/full/node_metadata.json using exact, normalized-suffix, and
+# prefix-containment matching, to avoid cold-start contamination (see automodel-advisor-retrieval
+# memory for the full contamination-check methodology and known caveats).
+#
+# NOTE: existence on HuggingFace and absence from the current graph snapshot were verified
+# 2026-08-22. Re-run the same check before using this list if the graph or HF datasets change.
+#
+# SPOT-CHECK (2026-08-22): 22 entries (>=1 per domain) fetched via the HF dataset-card API to
+# confirm they're real, non-gated, and match their stated domain/task. One fix applied: the
+# original `eli5` entry redirects to `defunct-datasets/eli5` (HF-deprecated) and was replaced
+# with `sentence-transformers/eli5`. `tuetschek/multi_woz_v22`'s card mentioned a "deprecated
+# builder script" but was confirmed to `load_dataset()` cleanly (datasets==5.0.1, 8437 train
+# examples) - false alarm, HF's auto-parquet conversion covers it. The rest of the list was not
+# individually re-verified this way - spot-check, not exhaustive.
+
+# --- medicine_health (15) ---
+deepset/covid_qa_deepset
+curai/medical_questions_pairs
+bigbio/chemprot
+bigbio/bc5cdr
+bigbio/ddi_corpus
+ade-benchmark-corpus/ade_corpus_v2
+Amod/mental_health_counseling_conversations
+bigbio/ncbi_disease
+bigbio/n2c2_2018_track2
+medalpaca/medical_meadow_medqa
+starmpcc/Asclepius-Synthetic-Clinical-Notes
+bigbio/mediqa_qa
+allenai/mslr2022
+gamino/wiki_medical_terms
+bigbio/bioasq_task_b
+
+# --- science (8) ---
+ccdv/pubmed-summarization
+allenai/quartz
+allenai/peer_read
+yaolu/multi_x_science_sum
+midas/inspec
+midas/duc2001
+midas/semeval2017
+griffin/ChemSum
+
+# --- law_legal (6) ---
+coastalcph/lex_glue
+theatticusproject/cuad
+casehold/casehold
+HUPD/hupd
+coastalcph/multi_eurlex
+joelniklaus/legal_case_document_summarization
+
+# --- finance_business (10) ---
+TheFinAI/fiqa-sentiment-classification
+JanosAudran/financial-reports-sec
+virattt/financial-qa-10K
+zeroshot/twitter-financial-news-sentiment
+gtfintechlab/finer-ord
+nlpaueb/finer-139
+dreamerdeo/finqa
+FinGPT/fingpt-sentiment-train
+ashraq/financial-news-articles
+CFPB/consumer-finance-complaints
+
+# --- literature_arts (5) ---
+cornell-movie-review-data/rotten_tomatoes
+google-research-datasets/poem_sentiment
+biglam/gutenberg-poetry-corpus
+cornell-movie-dialog/cornell_movie_dialog
+sileod/movie_recommendation
+
+# --- general_knowledge_commonsense (11) ---
+cais/mmlu
+ybisk/piqa
+allenai/cosmos_qa
+wics/strategy-qa
+pkavumba/balanced-copa
+google-research-datasets/paws
+facebook/anli
+nyu-mll/multi_nli
+RobZamp/sick
+sentence-transformers/yahoo-answers
+sentence-transformers/eli5
+
+# --- news_media (7) ---
+fancyzhx/dbpedia_14
+community-datasets/yahoo_answers_topics
+SetFit/bbc-news
+raquiba/Sarcasm_News_Headline
+ucirvine/reuters21578
+ccdv/WCEP-10
+SemEvalWorkshop/hyperpartisan_news_detection
+
+# --- education_exams (1) ---
+SetFit/student-question-categories
+
+# --- social_media_sentiment (10) ---
+cardiffnlp/tweet_eval
+fancyzhx/amazon_polarity
+fancyzhx/yelp_polarity
+google-research-datasets/go_emotions
+odegiber/hate_speech18
+ucsbnlp/liar
+chengxuphd/liar2
+ucberkeley-dlab/measuring-hate-speech
+google/civil_comments
+SetFit/tweet_eval_stance_abortion
+
+# --- dialogue (6) ---
+li2017dailydialog/daily_dialog
+knkarthick/samsum
+facebook/empathetic_dialogues
+ParlAI/blended_skill_talk
+google-research-datasets/taskmaster1
+tuetschek/multi_woz_v22
+
+# --- fact_verification (6) ---
+fever/fever
+tdiggelm/climate_fever
+hover-nlp/hover
+tals/vitaminc
+climatebert/environmental_claims
+climatebert/climate_commitments_actions
+
+# --- math_reasoning (4) ---
+MU-NLPC/Calc-asdiv_a
+deepmind/aqua_rat
+deepmind/math_dataset
+microsoft/orca-math-word-problems-200k
+
+# --- government_politics_opinion (5) ---
+Anthropic/llm_global_opinions
+ccdv/govreport-summarization
+launch/gov_report
+ought/raft
+launch/gov_report_qs
+
+# --- customer_service_product (5) ---
+McAuley-Lab/Amazon-Reviews-2023
+bitext/Bitext-customer-support-llm-chatbot-training-dataset
+embedding-data/Amazon-QA
+clinc/clinc_oos
+james-burton/wine_reviews
+
+# --- cybersecurity (1) ---
+ealvaradob/phishing-dataset
