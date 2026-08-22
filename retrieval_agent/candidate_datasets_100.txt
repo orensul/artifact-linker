@@ -1,4 +1,15 @@
-# Candidate pool of 100 text-only, cold-start-safe datasets for AutoModelAdvisor evaluation.
+# Candidate pool of 94 text-only, cold-start-safe datasets for AutoModelAdvisor evaluation.
+# (originally 100; the education_exams and cybersecurity domains were dropped since each had
+# only 1 entry - see git history for the removed education_exams/cybersecurity IDs if needed.
+# 4 more were dropped after going dead on HF since this list was built (all confirmed via
+# direct HTTP checks during the initial_run pipeline, 2026-08-22): curai/medical_questions_pairs
+# (401), yaolu/multi_x_science_sum (401), casehold/casehold (404), SetFit/tweet_eval_stance_abortion
+# (404). Separately, 4 more real, valid datasets could not complete Method 2 in the initial_run
+# because ArtifactLinker's graph resolver flags them as ambiguous against unrelated fuzzy-matching
+# graph nodes (a false positive of the same safety check that correctly catches true duplicates
+# like tau/commonsense_qa vs HuggingFaceFW/CommonsenseQA) - left in this list since they are
+# legitimate candidates, just not currently runnable through Method 2 as-is: cais/mmlu,
+# ybisk/piqa, facebook/anli, ought/raft.)
 #
 # Rationale: diverse text-only datasets spanning domains/knowledge types (medicine, science,
 # law, finance, literature, general knowledge, etc.) on which small (~3B param) models can still
@@ -19,9 +30,8 @@
 # examples) - false alarm, HF's auto-parquet conversion covers it. The rest of the list was not
 # individually re-verified this way - spot-check, not exhaustive.
 
-# --- medicine_health (15) ---
+# --- medicine_health (14) ---
 deepset/covid_qa_deepset
-curai/medical_questions_pairs
 bigbio/chemprot
 bigbio/bc5cdr
 bigbio/ddi_corpus
@@ -36,20 +46,18 @@ allenai/mslr2022
 gamino/wiki_medical_terms
 bigbio/bioasq_task_b
 
-# --- science (8) ---
+# --- science (7) ---
 ccdv/pubmed-summarization
 allenai/quartz
 allenai/peer_read
-yaolu/multi_x_science_sum
 midas/inspec
 midas/duc2001
 midas/semeval2017
 griffin/ChemSum
 
-# --- law_legal (6) ---
+# --- law_legal (5) ---
 coastalcph/lex_glue
 theatticusproject/cuad
-casehold/casehold
 HUPD/hupd
 coastalcph/multi_eurlex
 joelniklaus/legal_case_document_summarization
@@ -95,10 +103,7 @@ ucirvine/reuters21578
 ccdv/WCEP-10
 SemEvalWorkshop/hyperpartisan_news_detection
 
-# --- education_exams (1) ---
-SetFit/student-question-categories
-
-# --- social_media_sentiment (10) ---
+# --- social_media_sentiment (9) ---
 cardiffnlp/tweet_eval
 fancyzhx/amazon_polarity
 fancyzhx/yelp_polarity
@@ -108,7 +113,6 @@ ucsbnlp/liar
 chengxuphd/liar2
 ucberkeley-dlab/measuring-hate-speech
 google/civil_comments
-SetFit/tweet_eval_stance_abortion
 
 # --- dialogue (6) ---
 li2017dailydialog/daily_dialog
@@ -145,6 +149,3 @@ bitext/Bitext-customer-support-llm-chatbot-training-dataset
 embedding-data/Amazon-QA
 clinc/clinc_oos
 james-burton/wine_reviews
-
-# --- cybersecurity (1) ---
-ealvaradob/phishing-dataset

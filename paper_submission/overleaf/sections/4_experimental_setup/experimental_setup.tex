@@ -1,0 +1,29 @@
+
+
+\paragraph{Data.} We draw candidate query datasets from a pool of 97 Hugging Face datasets (\texttt{candidate\_datasets\_100.txt}), and constrain candidate models to those with at most 14B parameters that appear in ArtifactLinker's graph, so that recommendations are both retrievable and reproducible under a bounded compute budget. For the human-in-the-loop closed-loop evaluation, we select 10 datasets spanning five task families: text classification (\texttt{fancyzhx/ag\_news}, \texttt{stanfordnlp/imdb}, \texttt{TimSchopf/medical\_abstracts}, \texttt{ccdv/arxiv-classification}), claim verification (\texttt{ImperialCollegeLondon/health\_fact}), summarization (\texttt{allenai/scitldr}), reading-comprehension QA (\texttt{deepmind/narrativeqa}), image classification (\texttt{ethz/food101}, \texttt{blanchon/EuroSAT\_RGB}), and document VQA (\texttt{lmms-lab/DocVQA}), each with a task-appropriate metric (accuracy, macro-F1, ROUGE-L, or ANLS).
+
+\paragraph{Dataset diversity.} The 97-dataset candidate pool is text-only by design, so that diversity comes from domain and task structure rather than modality: each entry was chosen to span a distinct knowledge domain (medicine, science, law, finance, literature, general knowledge/commonsense, news, social media, dialogue, fact verification, mathematical reasoning, government/politics, and customer service) while remaining solvable enough for models at or below the 14B constraint to be competitive on it. Task formats are correspondingly heterogeneous rather than uniform: single-label classification and multiple-choice ($\sim$40 datasets, e.g. \texttt{cais/mmlu}, \texttt{facebook/anli}, \texttt{fever/fever}), span-level named-entity and keyphrase extraction ($\sim$10 datasets, e.g. \texttt{bigbio/chemprot}, \texttt{midas/inspec}), free-text generation spanning extractive/abstractive QA, summarization, and dialogue ($\sim$30 datasets, e.g. \texttt{deepset/covid\_qa\_deepset}, \texttt{allenai/mslr2022}, \texttt{knkarthick/samsum}), and a small number of continuous-score regression tasks (e.g. \texttt{james-burton/wine\_reviews}). Every candidate was verified to (i) exist on the Hugging Face Hub and (ii) be absent from ArtifactLinker's evaluation graph -- checked via exact, normalized-suffix, and prefix-containment matching against the graph's dataset nodes -- to guard against cold-start contamination.
+
+\paragraph{Conditions.} For each of the 10 evaluation datasets, we generate top-5 ranked recommendations under three evidence conditions that are identical in every respect (prompt format, LLM, $k=5$) except which retrieval evidence the recommending LLM sees: \textbf{A\_merged} (both Approach 1 and Approach 2 evidence), \textbf{B\_method1\_only} (cosine-retrieval evidence alone), and \textbf{C\_method2\_only} (direct-GNN evidence alone). This isolates how much each retrieval signal contributes to the final recommendation. Table~\ref{tab:conditions} summarizes the resulting design: 150 recommendations ($10 \times 3 \times 5$) deduplicate to 97 unique (dataset, model) evaluation runs.
+
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lc}
+\toprule
+\textbf{Quantity} & \textbf{Value} \\
+\midrule
+Evaluation datasets & 10 \\
+Conditions per dataset & 3 (A/B/C) \\
+Ranked recommendations per condition & 5 \\
+Total recommendations & 150 \\
+Unique (dataset, model) runs & 97 \\
+\bottomrule
+\end{tabular}
+\caption{Evaluation-protocol coverage for the closed-loop pilot.}
+\label{tab:conditions}
+\end{table}
+
+\paragraph{Metrics.} For each (dataset, condition), we report \textbf{Best@5} (the maximum measured score among its 5 recommended models) and \textbf{Mean@5} (averaged over valid ones), plus a \textbf{validity rate} -- models that cannot be run at all (wrong modality, broken repository, unusable size) are recorded as invalid rather than silently skipped, since validity is itself part of what a good recommender should get right.
+
+\paragraph{Baselines.} We compare against two baselines under matched compute and protocol: (1) \textbf{raw GNN}, the top-5 candidates by ArtifactLinker's combined link $\times$ attribute score alone, with no LLM reasoning, isolating what the retrieval LLM adds over the graph signal; and (2) a \textbf{strong coding-agent baseline}, where a general-purpose LLM coding agent (e.g., Claude) receives the same dataset, task description, and constraints, and is left to search for and evaluate candidate models on its own, without access to our graph-based retrieval tools. Both baselines are run on the same pilot subset, with the same evaluation protocol, hardware, constraints, and compute budget as our full system, isolating whether closed-loop, graph-grounded retrieval outperforms search-and-trial-run alone.
