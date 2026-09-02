@@ -1,0 +1,91 @@
+\documentclass[11pt]{article}
+
+% Change "review" to "final" to generate the final (sometimes called camera-ready) version.
+% Change to "preprint" to generate a non-anonymous version with page numbers.
+\usepackage[preprint]{acl}
+
+% Standard package includes
+\usepackage{times}
+\usepackage{latexsym}
+
+% For proper rendering and hyphenation of words containing Latin characters (including in bib files)
+\usepackage[T1]{fontenc}
+
+% This assumes your files are encoded as UTF8
+\usepackage[utf8]{inputenc}
+
+% This is not strictly necessary, and may be commented out,
+% but it will improve the layout of the manuscript,
+% and will typically save some space.
+\usepackage{microtype}
+
+% This is also not strictly necessary, and may be commented out.
+% However, it will improve the aesthetics of text in
+% the typewriter font.
+\usepackage{inconsolata}
+
+%Including images in your LaTeX document requires adding
+%additional package(s)
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\title{AutoModel Advisor: Closed-Loop Agentic Model Selection for Cold-Start Datasets}
+
+\author{Oren Sultan \\
+  The Hebrew University of Jerusalem \\
+  \texttt{oren.sultan@mail.huji.ac.il} \\\And
+  Roei Zucker \\
+  The Hebrew University of Jerusalem \\
+  \texttt{roei.zucker@mail.huji.ac.il} \\}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\input{sections/0_abstract/abstract}
+\end{abstract}
+
+\section{Introduction}
+\input{sections/1_introduction/introduction}
+\label{sec:introduction}
+
+
+
+
+\section{ArtifactLinker}
+\input{sections/2_artifact_linker/artifact_linker}
+\label{sec:artifact_linker}
+
+
+\section{Our Agentic Approach}
+\input{sections/3_our_agentic_approach/method}
+\label{sec:approach}
+
+
+\section{Experimental Setup}
+\input{sections/4_experimental_setup/experimental_setup}
+\label{sec:experimental_setup}
+
+\section{Results}
+\input{sections/5_results/results}
+\label{sec:results}
+
+
+\section{Related Work}
+\input{sections/6_related_work/related_work}
+\label{sec:related_work}
+
+
+\section{Conclusions}
+\input{sections/7_conclusions/conclusions}
+\label{sec:conclusion}
+
+
+\section*{Limitations}
+TODO
+
+\bibliography{custom}
+
+\end{document}
