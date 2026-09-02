@@ -1,0 +1,55 @@
+% Main pipeline figure of AutoModel Advisor. \input this inside a figure* environment.
+% Compact one-row layout (~14cm native) with stacked sub-boxes so the text stays large after \resizebox{\textwidth}.
+\begin{tikzpicture}[
+  font=\normalsize,
+  >=Latex,
+  box/.style={draw, rounded corners=3pt, line width=0.8pt, align=center, inner sep=5pt},
+  sub/.style={draw, rounded corners=2pt, line width=0.5pt, align=center, inner sep=3pt, fill=white, font=\small},
+  lbl/.style={font=\small, align=center, fill=white, inner sep=1.5pt},
+  tag/.style={font=\footnotesize},
+  arr/.style={->, line width=0.9pt},
+  farr/.style={->, line width=0.9pt, dashed},
+]
+\definecolor{orch}{RGB}{90,90,100}
+\definecolor{ret}{RGB}{0,140,130}
+\definecolor{retbg}{RGB}{232,247,245}
+\definecolor{eva}{RGB}{215,120,20}
+\definecolor{evabg}{RGB}{253,243,230}
+\definecolor{inp}{RGB}{70,100,170}
+
+% ---------- Retrieval Agent ----------
+\node[box, draw=ret, fill=retbg, minimum width=4.0cm, minimum height=4.9cm] (retr) at (0,0) {};
+\node[anchor=north, font=\normalsize\bfseries, text=ret] (rh) at ([yshift=-4pt]retr.north) {Retrieval Agent};
+\node[anchor=north, tag, text=ret] at ([yshift=-1pt]rh.south) {shortlists candidates};
+\node[draw=ret, dashed, rounded corners=2pt, line width=0.5pt, fill=white, minimum width=3.55cm, minimum height=3.0cm] (al) at ([yshift=-0.55cm]retr.center) {};
+\node[anchor=north, font=\small\bfseries] at ([yshift=-3pt]al.north) {ArtifactLinker};
+\node[sub, draw=ret, text width=2.95cm] (a1) at ([yshift=-0.05cm]al.center) {\textbf{(i) Cosine retrieval}\\[-1pt]{\footnotesize similar datasets}};
+\node[sub, draw=ret, text width=2.95cm] (a2) at ([yshift=-1.0cm]al.center) {\textbf{(ii) Direct GNN}\\[-1pt]{\footnotesize insert as new node}};
+
+% ---------- Evaluation Agent ----------
+\node[box, draw=eva, fill=evabg, minimum width=4.0cm, minimum height=4.9cm] (eval) at (5.8,0) {};
+\node[anchor=north, font=\normalsize\bfseries, text=eva] (eh) at ([yshift=-4pt]eval.north) {Evaluation Agent};
+\node[anchor=north, tag, text=eva] at ([yshift=-1pt]eh.south) {verifies on target data};
+\node[sub, draw=eva, text width=3.0cm, inner sep=4pt] (code) at ([yshift=-0.05cm]eval.center) {writes \& runs\\[-1pt]evaluation code};
+\node[sub, draw=eva, text width=3.0cm, inner sep=4pt] (meas) at ([yshift=-1.25cm]eval.center) {measured scores};
+\draw[arr, eva] (code) -- (meas);
+
+% ---------- orchestrator (spans both agents) ----------
+\path let \p1=(retr.west), \p2=(eval.east) in
+  node[box, draw=orch, fill=orch!8, minimum height=0.9cm, minimum width=\x2-\x1] (orch)
+  at ($(retr.north)!0.5!(eval.north)+(0,1.2)$) {\textbf{Orchestrator}};
+
+% ---------- input / output beside the agents ----------
+\node[box, draw=inp, text=inp, fill=white, inner sep=4pt, text width=1.75cm, anchor=east] (data) at ([xshift=-0.45cm]retr.west)
+  {\includegraphics[height=0.7cm]{figures/hf-logo}\\[2pt]\textbf{Target}\\[-1pt]\textbf{dataset}\\[-1pt]{\footnotesize cold start}};
+\node[box, draw=inp, text=inp, fill=white, inner sep=4pt, text width=2.2cm, anchor=west] (out) at ([xshift=0.45cm]eval.east)
+  {\textbf{Recommended}\\[-1pt]\textbf{models}\\[-1pt]{\footnotesize verified}};
+
+% ---------- edges ----------
+\draw[arr, inp] (data.east) -- (retr.west);
+\draw[arr, eva] (eval.east) -- (out.west);
+\draw[arr, orch] (orch.south -| retr.north) -- (retr.north);
+\draw[arr, orch] (orch.south -| eval.north) -- (eval.north);
+\draw[arr, ret] (retr.east) -- node[lbl, above=1pt] {candidates} node[lbl, below=1pt, text=ret!80!black] {\emph{initial run}} (eval.west);
+\draw[farr, eva] (eval.south) -- ++(0,-0.6) -| node[lbl, pos=0.25, below=1pt, text=eva!85!black] {\textbf{Error analysis} -- refine \& improve retrieval \ {\emph{(revision run)}}} (retr.south);
+\end{tikzpicture}
